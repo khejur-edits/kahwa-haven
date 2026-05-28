@@ -1521,19 +1521,21 @@ document.getElementById("product-canvas");
 const productContext =
 productCanvas.getContext("2d");
 
-productCanvas.width =
-productCanvas.offsetWidth;
+function resizeProductCanvas(){
 
-productCanvas.height =
-productCanvas.offsetHeight;
+  productCanvas.width =
+  productCanvas.clientWidth;
+
+  productCanvas.height =
+  productCanvas.clientHeight;
+
+}
+
+resizeProductCanvas();
 
 window.addEventListener("resize", () => {
 
-  productCanvas.width =
-  productCanvas.offsetWidth;
-
-  productCanvas.height =
-  productCanvas.offsetHeight;
+  resizeProductCanvas();
 
   renderProduct();
 
@@ -1616,7 +1618,11 @@ function renderProduct(){
 }
 
 productImages[0].onload = () => {
+
+  resizeProductCanvas();
+
   renderProduct();
+
 };
 
 gsap.to(productSequence,{
