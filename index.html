@@ -710,159 +710,251 @@
 
   <script>
 
-    gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger);
 
-    const canvas = document.getElementById('hero-canvas');
-    const ctx = canvas.getContext('2d');
+/* CANVAS */
 
-    const video = document.createElement('video');
+const canvas = document.getElementById("hero-canvas");
+const context = canvas.getContext("2d");
 
-    video.src = 'video1.mp4';
-    video.crossOrigin = 'anonymous';
-    video.muted = true;
-    video.playsInline = true;
-    video.preload = 'auto';
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-    const loader = document.getElementById('loader');
-    const loaderBar = document.querySelector('.loader-bar');
+window.addEventListener("resize", () => {
 
-    const textMap = [
-      { el: 't1', start: 0.03, end: 0.11 },
-      { el: 't2', start: 0.16, end: 0.26 },
-      { el: 't3', start: 0.42, end: 0.50 },
-      { el: 't4', start: 0.56, end: 0.59 },
-      { el: 't5', start: 0.60, end: 0.63 },
-      { el: 't6', start: 0.63, end: 0.67 },
-      { el: 't7', start: 0.70, end: 0.80 },
-      { el: 't8', start: 0.83, end: 0.91 },
-    ];
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 
-    const buttonMap = {
-      el:'t9',
-      start:0.93,
-      end:1
-    };
+  render();
 
-    function resizeCanvas(){
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
+});
 
-    resizeCanvas();
+/* LOADER */
 
-    window.addEventListener('resize', resizeCanvas);
+const loader = document.getElementById('loader');
+const loaderBar = document.querySelector('.loader-bar');
 
-    function drawVideo(){
-      const videoRatio = video.videoWidth / video.videoHeight;
-      const canvasRatio = canvas.width / canvas.height;
+/* TEXT TIMELINE */
 
-      let drawWidth, drawHeight, x, y;
+const textMap = [
+  { el: 't1', start: 0.03, end: 0.11 },
+  { el: 't2', start: 0.16, end: 0.26 },
+  { el: 't3', start: 0.42, end: 0.50 },
+  { el: 't4', start: 0.56, end: 0.59 },
+  { el: 't5', start: 0.60, end: 0.63 },
+  { el: 't6', start: 0.63, end: 0.67 },
+  { el: 't7', start: 0.70, end: 0.80 },
+  { el: 't8', start: 0.83, end: 0.91 },
+];
 
-      if(videoRatio > canvasRatio){
-        drawHeight = canvas.height;
-        drawWidth = drawHeight * videoRatio;
-        x = (canvas.width - drawWidth) / 2;
-        y = 0;
+const buttonMap = {
+  el:'t9',
+  start:0.93,
+  end:1
+};
+
+/* IMAGE SEQUENCE */
+
+const frameCount = 294;
+
+const currentFrame = (index) => {
+
+  return `frames/ezgif-frame-${String(index + 1).padStart(3, '0')}.jpg`;
+
+};
+
+const images = [];
+
+const kahwa = {
+  frame: 0
+};
+
+/* PRELOAD FRAMES */
+
+for (let i = 0; i < frameCount; i++) {
+
+  const img = new Image();
+
+  img.src = currentFrame(i);
+
+  images.push(img);
+
+}
+
+/* LOADER COMPLETE */
+
+images[0].onload = () => {
+
+  render();
+
+  loaderBar.style.width = '100%';
+
+  setTimeout(() => {
+    loader.classList.add("hidden");
+  }, 800);
+
+};
+
+/* RENDER FUNCTION */
+
+function render() {
+
+  const img = images[kahwa.frame];
+
+  if (!img) return;
+
+  context.clearRect(0, 0, canvas.width, canvas.height);
+
+  const canvasRatio = canvas.width / canvas.height;
+  const imageRatio = img.width / img.height;
+
+  let drawWidth;
+  let drawHeight;
+  let x;
+  let y;
+
+  if (imageRatio > canvasRatio) {
+
+    drawHeight = canvas.height;
+    drawWidth = drawHeight * imageRatio;
+
+    x = (canvas.width - drawWidth) / 2;
+    y = 0;
+
+  } else {
+
+    drawWidth = canvas.width;
+    drawHeight = drawWidth / imageRatio;
+
+    x = 0;
+    y = (canvas.height - drawHeight) / 2;
+
+  }
+
+  context.drawImage(
+    img,
+    x,
+    y,
+    drawWidth,
+    drawHeight
+  );
+
+  /* DARK CINEMATIC OVERLAY */
+
+  context.fillStyle = "rgba(0,0,0,0.18)";
+  context.fillRect(0,0,canvas.width,canvas.height);
+
+}
+
+/* SCROLL ANIMATION */
+
+gsap.to(kahwa, {
+
+  frame: frameCount - 1,
+
+  snap: "frame",
+
+  ease: "none",
+
+  scrollTrigger: {
+
+    trigger: ".hero",
+
+    start: "top top",
+
+    end: "bottom bottom",
+
+    scrub: 0.25
+
+  },
+
+  onUpdate: () => {
+
+    render();
+
+    const progress = kahwa.frame / (frameCount - 1);
+
+    /* PROGRESS BAR */
+
+    document.querySelector('.progress-fill').style.height =
+    `${progress * 100}%`;
+
+    /* TEXT OVERLAYS */
+
+    textMap.forEach(item => {
+
+      const el = document.getElementById(item.el);
+
+      if(progress >= item.start && progress <= item.end){
+
+        el.classList.add('active');
+
       } else {
-        drawWidth = canvas.width;
-        drawHeight = drawWidth / videoRatio;
-        x = 0;
-        y = (canvas.height - drawHeight) / 2;
+
+        el.classList.remove('active');
+
       }
 
-      ctx.clearRect(0,0,canvas.width,canvas.height);
+    });
 
-      ctx.drawImage(video,x,y,drawWidth,drawHeight);
+    /* BUTTON */
 
-      ctx.fillStyle = 'rgba(0,0,0,0.18)';
-      ctx.fillRect(0,0,canvas.width,canvas.height);
+    const btn = document.getElementById(buttonMap.el);
+
+    if(progress >= buttonMap.start){
+
+      btn.classList.add('active');
+
+    } else {
+
+      btn.classList.remove('active');
+
     }
 
-    video.addEventListener('loadedmetadata', () => {
+  }
 
-      loaderBar.style.width = '100%';
+});
 
-      setTimeout(() => {
-        loader.classList.add('hidden');
-      }, 900);
+/* PARTICLES */
 
-      ScrollTrigger.create({
-        trigger:'.hero',
-        start:'top top',
-        end:'bottom bottom',
-        scrub:1,
+const particles = document.getElementById('particles');
 
-        onUpdate:self => {
+for(let i=0;i<40;i++){
 
-          const progress = self.progress;
+  const p = document.createElement('div');
 
-          video.currentTime = progress * video.duration;
+  p.classList.add('particle');
 
-          document.querySelector('.progress-fill').style.height =
-          `${progress * 100}%`;
+  p.style.left = Math.random() * 100 + '%';
+  p.style.top = Math.random() * 100 + '%';
 
-          textMap.forEach(item => {
+  p.style.animationDelay =
+  Math.random() * 12 + 's';
 
-            const el = document.getElementById(item.el);
+  p.style.animationDuration =
+  10 + Math.random() * 12 + 's';
 
-            if(progress >= item.start && progress <= item.end){
-              el.classList.add('active');
-            } else {
-              el.classList.remove('active');
-            }
+  particles.appendChild(p);
 
-          });
+}
 
-          const btn = document.getElementById(buttonMap.el);
+/* PRODUCT FLOAT */
 
-          if(progress >= buttonMap.start){
-            btn.classList.add('active');
-          } else {
-            btn.classList.remove('active');
-          }
+gsap.to('.product-box',{
 
-        }
+  y:-18,
 
-      });
+  duration:4,
 
-    });
+  repeat:-1,
 
-    video.addEventListener('seeked', () => {
-      requestAnimationFrame(drawVideo);
-    });
+  yoyo:true,
 
-    // PARTICLES
+  ease:'sine.inOut'
 
-    const particles = document.getElementById('particles');
-
-    for(let i=0;i<40;i++){
-
-      const p = document.createElement('div');
-      p.classList.add('particle');
-
-      p.style.left = Math.random() * 100 + '%';
-      p.style.top = Math.random() * 100 + '%';
-
-      p.style.animationDelay =
-      Math.random() * 12 + 's';
-
-      p.style.animationDuration =
-      10 + Math.random() * 12 + 's';
-
-      particles.appendChild(p);
-    }
-
-    // PRODUCT FLOAT
-
-    gsap.to('.product-box',{
-      y:-18,
-      duration:4,
-      repeat:-1,
-      yoyo:true,
-      ease:'sine.inOut'
-    });
+});
 
   </script>
-
+  
 </body>
 </html>
