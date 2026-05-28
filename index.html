@@ -1591,7 +1591,7 @@ function renderProduct(){
   if(imageRatio > canvasRatio){
 
     drawHeight = productCanvas.height;
-    drawWidth = drawHeight * imageRatio;
+    drawWidth = (drawHeight * imageRatio) * 0.78;
 
     x = (productCanvas.width - drawWidth) / 2;
     y = 0;
@@ -1599,7 +1599,7 @@ function renderProduct(){
   } else {
 
     drawWidth = productCanvas.width;
-    drawHeight = drawWidth / imageRatio;
+    drawHeight = (drawWidth / imageRatio) * 0.78;
 
     x = 0;
     y = (productCanvas.height - drawHeight) / 2;
