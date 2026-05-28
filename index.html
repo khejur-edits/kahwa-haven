@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>KAHWA HAVEN</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      background:#030303;
+      color:white;
+      overflow-x:hidden;
+      font-family:'Inter',sans-serif;
+    }
+
+    :root{
+      --amber:rgba(245,158,11,0.92);
+    }
+
+    /* LOADER */
+
+    #loader{
+      position:fixed;
+      inset:0;
+      background:#000;
+      z-index:99999;
+
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+
+      transition:opacity 1s ease;
+    }
+
+    #loader.hidden{
+      opacity:0;
+      pointer-events:none;
+    }
+
+    .loader-title{
+      font-family:'Cormorant Garamond',serif;
+      font-size:48px;
+      letter-spacing:.14em;
+      color:var(--amber);
+      margin-bottom:28px;
+    }
+
+    .loader-bar-wrap{
+      width:220px;
+      height:1px;
+      background:rgba(255,255,255,0.08);
+      overflow:hidden;
+    }
+
+    .loader-bar{
+      width:0%;
+      height:100%;
+      background:var(--amber);
+      transition:width .3s ease;
+    }
+
+    .loader-sub{
+      margin-top:16px;
+      font-size:11px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,0.35);
+    }
+
+    /* HEADER */
+
+    header{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+
+      padding:28px 50px;
+
+      z-index:999;
+
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+
+      pointer-events:none;
+    }
+
+    .brand{
+      font-family:'Cormorant Garamond',serif;
+      font-size:15px;
+      letter-spacing:.25em;
+      color:var(--amber);
+      pointer-events:auto;
+    }
+
+    .shop{
+      font-size:11px;
+      letter-spacing:.28em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,0.72);
+      pointer-events:auto;
+    }
+
+    /* PROGRESS */
+
+    .progress-track{
+      position:fixed;
+      right:22px;
+      top:50%;
+      transform:translateY(-50%);
+
+      width:1px;
+      height:220px;
+
+      background:rgba(255,255,255,0.08);
+
+      z-index:999;
+      overflow:hidden;
+    }
+
+    .progress-fill{
+      width:100%;
+      height:0%;
+      background:var(--amber);
+      transform-origin:top;
+    }
+
+    /* HERO */
+
+    .hero{
+      position:relative;
+      height:800vh;
+      background:#030303;
+    }
+
+    .sticky{
+      position:sticky;
+      top:0;
+      width:100%;
+      height:100vh;
+      overflow:hidden;
+    }
+
+    canvas{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .overlay{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+    }
+
+    /* TEXT SYSTEM */
+
+    .text-seq{
+
+      position:absolute;
+
+      opacity:0;
+
+      transition:
+      opacity .55s ease,
+      transform .55s ease;
+
+      padding:0 20px;
+
+    }
+
+    .text-seq.active{
+      opacity:1;
+    }
+
+    /* TITLE */
+
+    .main-title{
+
+      top:18%;
+      left:50%;
+
+      width:100%;
+
+      text-align:center;
+
+      transform:
+      translateX(-50%)
+      translateY(25px);
+
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(52px,8vw,120px);
+      letter-spacing:.1em;
+
+      color:rgba(255,255,255,0.96);
+
+    }
+
+    .main-title.active{
+
+      transform:
+      translateX(-50%)
+      translateY(0px);
+
+    }
+
+    /* STATEMENT */
+
+    .statement{
+
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(34px,4vw,72px);
+
+      line-height:1.12;
+
+      max-width:520px;
+
+      color:rgba(255,255,255,0.95);
+
+    }
+
+    /* LEFT ALIGN */
+
+    .left-text{
+
+      left:7vw;
+      text-align:left;
+
+      transform:translateY(20px);
+
+    }
+
+    .left-text.active{
+      transform:translateY(0px);
+    }
+
+    /* RIGHT ALIGN */
+
+    .right-text{
+
+      right:7vw;
+      text-align:right;
+
+      transform:translateY(20px);
+
+    }
+
+    .right-text.active{
+      transform:translateY(0px);
+    }
+
+    /* POSITIONS */
+
+    .bottom-left{
+      bottom:13%;
+    }
+
+    .top-right{
+      top:18%;
+    }
+
+    .mid-left{
+      top:58%;
+    }
+
+    .mid-right{
+      top:52%;
+    }
+
+    /* SMALL WORDS */
+
+    .small{
+      font-size:clamp(34px,3vw,54px);
+      line-height:1;
+    }
+
+    /* CENTER RITUAL */
+
+    .ritual{
+
+      width:100%;
+
+      left:50%;
+      top:64%;
+
+      text-align:center;
+
+      transform:
+      translateX(-50%)
+      translateY(25px);
+
+    }
+
+    .ritual.active{
+
+      transform:
+      translateX(-50%)
+      translateY(0px);
+
+    }
+
+    /* CTA */
+
+    .cta-wrap{
+
+      position:absolute;
+
+      width:100%;
+
+      top:74%;
+
+      display:flex;
+      justify-content:center;
+
+      opacity:0;
+
+      transform:translateY(25px);
+
+      transition:
+      opacity .7s ease,
+      transform .7s ease;
+
+    }
+
+    .cta-wrap.active{
+
+      opacity:1;
+
+      transform:translateY(0px);
+
+    }
+
+    .cta{
+
+      border:1px solid rgba(245,158,11,0.65);
+
+      padding:16px 34px;
+
+      background:transparent;
+
+      color:white;
+
+      font-size:11px;
+
+      letter-spacing:.22em;
+
+      text-transform:uppercase;
+
+      backdrop-filter:blur(10px);
+
+      transition:all .45s ease;
+
+    }
+
+    .cta:hover{
+
+      cursor:pointer;
+
+      transform:translateY(-2px);
+
+      box-shadow:
+      0 0 28px rgba(245,158,11,0.2),
+      inset 0 0 22px rgba(245,158,11,0.08);
+
+    }
+
+    /* PRODUCT SECTION */
+
+    .product-section{
+
+      position:relative;
+
+      padding:180px 8vw;
+
+      background:
+      radial-gradient(
+      circle at top right,
+      rgba(245,158,11,0.08),
+      transparent 35%
+      ),
+      #050505;
+
+      overflow:hidden;
+
+    }
+
+    .particles{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+    }
+
+    .particle{
+
+      position:absolute;
+
+      width:3px;
+      height:3px;
+
+      background:rgba(245,158,11,0.25);
+
+      border-radius:50%;
+
+      filter:blur(1px);
+
+      animation:float 12s linear infinite;
+
+    }
+
+    @keyframes float{
+
+      0%{
+        transform:translateY(0px);
+        opacity:0;
+      }
+
+      20%{
+        opacity:1;
+      }
+
+      100%{
+        transform:translateY(-120px);
+        opacity:0;
+      }
+
+    }
+
+    .product-wrap{
+      display:flex;
+      justify-content:center;
+      margin-bottom:120px;
+      perspective:1400px;
+    }
+
+    .product-box{
+
+      width:320px;
+      height:520px;
+
+      border-radius:22px;
+
+      background:
+      linear-gradient(
+      145deg,
+      #e9dcc8,
+      #c9b397
+      );
+
+      box-shadow:
+      -40px 0 120px rgba(245,158,11,0.12),
+      0 30px 100px rgba(0,0,0,0.8);
+
+      position:relative;
+
+      transform-style:preserve-3d;
+
+      transition:transform .8s ease;
+
+    }
+
+    .product-box:hover{
+
+      transform:
+      rotateY(-7deg)
+      rotateX(4deg)
+      translateY(-10px);
+
+    }
+
+    .gold-line{
+
+      position:absolute;
+
+      top:35px;
+      left:35px;
+      right:35px;
+
+      height:1px;
+
+      background:rgba(193,145,52,0.7);
+
+    }
+
+    .product-content{
+
+      position:absolute;
+      inset:0;
+
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+
+      padding:50px;
+
+      text-align:center;
+
+    }
+
+    .product-brand{
+
+      font-family:'Cormorant Garamond',serif;
+
+      font-size:44px;
+
+      line-height:.9;
+
+      color:#7a5410;
+
+      letter-spacing:.08em;
+
+    }
+
+    .product-sub{
+
+      margin-top:20px;
+
+      letter-spacing:.35em;
+
+      text-transform:uppercase;
+
+      color:#8d6a2c;
+
+      font-size:11px;
+
+    }
+
+    .editorial{
+
+      display:grid;
+
+      grid-template-columns:1fr 1fr;
+
+      gap:90px;
+
+      align-items:start;
+
+    }
+
+    .mini-head{
+
+      color:var(--amber);
+
+      font-size:11px;
+
+      letter-spacing:.3em;
+
+      text-transform:uppercase;
+
+      margin-bottom:30px;
+
+    }
+
+    .story{
+
+      color:rgba(255,255,255,0.62);
+
+      line-height:2;
+
+      font-size:15px;
+
+      max-width:520px;
+
+    }
+
+    .divider{
+
+      width:100%;
+      height:1px;
+
+      background:rgba(255,255,255,0.08);
+
+      margin:30px 0;
+
+    }
+
+    .big-head{
+
+      font-family:'Cormorant Garamond',serif;
+
+      font-size:clamp(48px,6vw,90px);
+
+      line-height:.95;
+
+      margin-bottom:40px;
+
+      color:rgba(255,255,255,0.95);
+
+    }
+
+    .notes{
+
+      color:rgba(255,255,255,0.65);
+
+      line-height:2.2;
+
+      font-size:15px;
+
+    }
+
+    /* NEWSLETTER */
+
+    .newsletter{
+
+      padding:180px 20px;
+
+      text-align:center;
+
+      background:
+      linear-gradient(
+      to bottom,
+      #070707,
+      #030303
+      );
+
+    }
+
+    .newsletter h2{
+
+      font-family:'Cormorant Garamond',serif;
+
+      font-size:clamp(48px,6vw,90px);
+
+      color:rgba(255,255,255,0.95);
+
+      margin-bottom:24px;
+
+    }
+
+    .newsletter p{
+
+      color:rgba(255,255,255,0.5);
+
+      margin-bottom:60px;
+
+      letter-spacing:.04em;
+
+    }
+
+    .input-wrap{
+
+      width:min(480px,90%);
+
+      margin:auto;
+
+    }
+
+    .input-wrap input{
+
+      width:100%;
+
+      background:transparent;
+
+      border:none;
+
+      border-bottom:1px solid rgba(245,158,11,0.45);
+
+      padding:18px 0;
+
+      color:white;
+
+      font-size:15px;
+
+      outline:none;
+
+      transition:border .5s ease;
+
+    }
+
+    .input-wrap input:focus{
+      border-color:rgba(245,158,11,1);
+    }
+
+    /* FOOTER */
+
+    footer{
+
+      padding:40px 50px;
+
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+
+      border-top:1px solid rgba(255,255,255,0.05);
+
+      color:rgba(255,255,255,0.42);
+
+      font-size:12px;
+
+      letter-spacing:.12em;
+
+      text-transform:uppercase;
+
+    }
+
+    .footer-brand{
+
+      font-family:'Cormorant Garamond',serif;
+
+      color:var(--amber);
+
+      font-size:18px;
+
+      letter-spacing:.18em;
+
+    }
+
+    .socials{
+      display:flex;
+      gap:20px;
+    }
+
+    @media(max-width:900px){
+
+      header{
+        padding:24px;
+      }
+
+      .progress-track{
+        display:none;
+      }
+
+      .editorial{
+        grid-template-columns:1fr;
+        gap:60px;
+      }
+
+      footer{
+        flex-direction:column;
+        gap:25px;
+        text-align:center;
+      }
+
+      .statement{
+        max-width:85%;
+      }
+
+      .left-text,
+      .right-text{
+
+        left:6vw;
+        right:auto;
+
+        text-align:left;
+
+      }
+
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- LOADER -->
+
+  <div id="loader">
+
+    <div class="loader-title">
+      KAHWA HAVEN
+    </div>
+
+    <div class="loader-bar-wrap">
+      <div class="loader-bar"></div>
+    </div>
+
+    <div class="loader-sub">
+      Preparing your ritual...
+    </div>
+
+  </div>
+
+  <!-- HEADER -->
+
+  <header>
+
+    <div class="brand">
+      KAHWA HAVEN
+    </div>
+
+    <div class="shop">
+      SHOP
+    </div>
+
+  </header>
+
+  <!-- PROGRESS -->
+
+  <div class="progress-track">
+    <div class="progress-fill"></div>
+  </div>
+
+  <!-- HERO -->
+
+  <section class="hero">
+
+    <div class="sticky">
+
+      <canvas id="hero-canvas"></canvas>
+
+      <div class="overlay">
+
+        <!-- TITLE -->
+
+        <div class="text-seq main-title" id="t1">
+          KAHWA HAVEN
+        </div>
+
+        <!-- LEFT -->
+
+        <div class="text-seq statement left-text bottom-left" id="t2">
+          A single bag.
+        </div>
+
+        <!-- RIGHT -->
+
+        <div class="text-seq statement right-text top-right" id="t3">
+          Ancient ritual inside.
+        </div>
+
+        <!-- LEFT -->
+
+        <div class="text-seq statement left-text mid-left" id="t4">
+          Watch nature awaken.
+        </div>
+
+        <!-- RIGHT -->
+
+        <div class="text-seq statement small right-text mid-right" id="t5">
+          Pour.
+        </div>
+
+        <!-- LEFT -->
+
+        <div class="text-seq statement small left-text bottom-left" id="t6">
+          Wait.
+        </div>
+
+        <!-- RIGHT -->
+
+        <div class="text-seq statement small right-text mid-right" id="t7">
+          Breathe.
+        </div>
+
+        <!-- CENTER -->
+
+        <div class="text-seq ritual" id="t8">
+
+          <div class="statement">
+            Three minutes.
+          </div>
+
+        </div>
+
+        <!-- CENTER -->
+
+        <div class="text-seq ritual" id="t9">
+
+          <div class="statement">
+            That is all it takes.
+          </div>
+
+        </div>
+
+        <!-- FINAL -->
+
+        <div class="text-seq ritual" id="t10">
+
+          <div class="statement">
+            SERENE.<br>
+            Steeped in silence.
+          </div>
+
+        </div>
+
+        <!-- CTA -->
+
+        <div class="cta-wrap" id="t11">
+
+          <button class="cta">
+            BEGIN YOUR RITUAL →
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- PRODUCT -->
+
+  <section class="product-section">
+
+    <div class="particles" id="particles"></div>
+
+    <div class="product-wrap">
+
+      <div class="product-box">
+
+        <div class="gold-line"></div>
+
+        <div class="product-content">
+
+          <div class="product-brand">
+            KAHWA<br>HAVEN
+          </div>
+
+          <div class="product-sub">
+            Kashmiri Kahwa
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="editorial">
+
+      <div>
+
+        <div class="mini-head">
+          Crafted in Kashmir
+        </div>
+
+        <div class="story">
+
+          Born in the quiet mountain air of Kashmir,
+          KAHWA HAVEN is composed as a slow ritual
+          rather than a beverage.
+
+          <div class="divider"></div>
+
+          Delicate saffron threads unfold beside rose petals,
+          cardamom, green tea, and warm botanicals gathered
+          from elevated Himalayan landscapes.
+
+          <div class="divider"></div>
+
+          Every cup is designed to quiet the mind,
+          soften the pace of the day,
+          and return warmth back into the body.
+
+        </div>
+
+      </div>
+
+      <div>
+
+        <div class="big-head">
+          Golden Kahwa Ritual
+        </div>
+
+        <div class="notes">
+
+          Silken saffron warmth.<br><br>
+
+          Soft floral rose aroma.<br><br>
+
+          Cardamom spice unfolding slowly.<br><br>
+
+          Gentle green tea brightness.<br><br>
+
+          A calm finish that lingers like incense
+          in a quiet room at dusk.
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- NEWSLETTER -->
+
+  <section class="newsletter">
+
+    <h2>Join the ritual.</h2>
+
+    <p>
+      No noise.<br>
+      Only warmth, silence, and ceremony.
+    </p>
+
+    <div class="input-wrap">
+      <input type="email" placeholder="Your email">
+    </div>
+
+  </section>
+
+  <!-- FOOTER -->
+
+  <footer>
+
+    <div class="footer-brand">
+      KAHWA HAVEN
+    </div>
+
+    <div>
+      © 2026 Kahwa Haven.<br>
+      Rooted in the mountains.
+    </div>
+
+    <div class="socials">
+      <span>Instagram</span>
+      <span>YouTube</span>
+    </div>
+
+  </footer>
+
+  <script>
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    /* CANVAS */
+
+    const canvas = document.getElementById("hero-canvas");
+    const context = canvas.getContext("2d");
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    window.addEventListener("resize", () => {
+
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      render();
+
+    });
+
+    /* LOADER */
+
+    const loader = document.getElementById('loader');
+    const loaderBar = document.querySelector('.loader-bar');
+
+    /* TIMELINE */
+
+    const textMap = [
+
+      {
+        el:'t1',
+        start:0.03,
+        end:0.11
+      },
+
+      {
+        el:'t2',
+        start:0.14,
+        end:0.21
+      },
+
+      {
+        el:'t3',
+        start:0.22,
+        end:0.30
+      },
+
+      {
+        el:'t4',
+        start:0.39,
+        end:0.50
+      },
+
+      {
+        el:'t5',
+        start:0.58,
+        end:0.67
+      },
+
+      {
+        el:'t6',
+        start:0.67,
+        end:0.76
+      },
+
+      {
+        el:'t7',
+        start:0.76,
+        end:0.84
+      },
+
+      {
+        el:'t8',
+        start:0.82,
+        end:0.89
+      },
+
+      {
+        el:'t9',
+        start:0.88,
+        end:0.94
+      },
+
+      {
+        el:'t10',
+        start:0.92,
+        end:0.985
+      }
+
+    ];
+
+    const buttonMap = {
+
+      el:'t11',
+
+      start:0.965,
+
+      end:1
+
+    };
+
+    /* IMAGE SEQUENCE */
+
+    const frameCount = 294;
+
+    const currentFrame = (index) => {
+
+      return `frames/ezgif-frame-${String(index + 1).padStart(3, '0')}.jpg`;
+
+    };
+
+    const images = [];
+
+    const kahwa = {
+      frame:0
+    };
+
+    /* PRELOAD */
+
+    for(let i=0;i<frameCount;i++){
+
+      const img = new Image();
+
+      img.src = currentFrame(i);
+
+      images.push(img);
+
+    }
+
+    /* LOADER */
+
+    images[0].onload = () => {
+
+      render();
+
+      loaderBar.style.width = '100%';
+
+      setTimeout(() => {
+
+        loader.classList.add("hidden");
+
+      },800);
+
+    };
+
+    /* RENDER */
+
+    function render(){
+
+      const img = images[kahwa.frame];
+
+      if(!img) return;
+
+      context.clearRect(0,0,canvas.width,canvas.height);
+
+      const canvasRatio = canvas.width / canvas.height;
+      const imageRatio = img.width / img.height;
+
+      let drawWidth;
+      let drawHeight;
+      let x;
+      let y;
+
+      if(imageRatio > canvasRatio){
+
+        drawHeight = canvas.height;
+        drawWidth = drawHeight * imageRatio;
+
+        x = (canvas.width - drawWidth) / 2;
+        y = 0;
+
+      } else {
+
+        drawWidth = canvas.width;
+        drawHeight = drawWidth / imageRatio;
+
+        x = 0;
+        y = (canvas.height - drawHeight) / 2;
+
+      }
+
+      context.drawImage(
+        img,
+        x,
+        y,
+        drawWidth,
+        drawHeight
+      );
+
+      context.fillStyle = "rgba(0,0,0,0.18)";
+      context.fillRect(0,0,canvas.width,canvas.height);
+
+    }
+
+    /* SCROLL */
+
+    gsap.to(kahwa, {
+
+      frame:frameCount - 1,
+
+      snap:"frame",
+
+      ease:"none",
+
+      scrollTrigger:{
+
+        trigger:".hero",
+
+        start:"top top",
+
+        end:"bottom bottom",
+
+        scrub:0.25
+
+      },
+
+      onUpdate:() => {
+
+        render();
+
+        const progress =
+        kahwa.frame / (frameCount - 1);
+
+        /* PROGRESS */
+
+        document.querySelector('.progress-fill').style.height =
+        `${progress * 100}%`;
+
+        /* TEXTS */
+
+        textMap.forEach(item => {
+
+          const el =
+          document.getElementById(item.el);
+
+          if(
+            progress >= item.start &&
+            progress <= item.end
+          ){
+
+            el.classList.add('active');
+
+          } else {
+
+            el.classList.remove('active');
+
+          }
+
+        });
+
+        /* BUTTON */
+
+        const btn =
+        document.getElementById(buttonMap.el);
+
+        if(progress >= buttonMap.start){
+
+          btn.classList.add('active');
+
+        } else {
+
+          btn.classList.remove('active');
+
+        }
+
+      }
+
+    });
+
+    /* PARTICLES */
+
+    const particles =
+    document.getElementById('particles');
+
+    for(let i=0;i<40;i++){
+
+      const p = document.createElement('div');
+
+      p.classList.add('particle');
+
+      p.style.left =
+      Math.random() * 100 + '%';
+
+      p.style.top =
+      Math.random() * 100 + '%';
+
+      p.style.animationDelay =
+      Math.random() * 12 + 's';
+
+      p.style.animationDuration =
+      10 + Math.random() * 12 + 's';
+
+      particles.appendChild(p);
+
+    }
+
+    /* PRODUCT FLOAT */
+
+    gsap.to('.product-box',{
+
+      y:-18,
+
+      duration:4,
+
+      repeat:-1,
+
+      yoyo:true,
+
+      ease:'sine.inOut'
+
+    });
+
+  </script>
+
+</body>
+</html>
